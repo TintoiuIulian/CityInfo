@@ -1,6 +1,8 @@
+using CityInfo.API.DbContexts;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Runtime.InteropServices;
 
@@ -41,12 +43,18 @@ builder.Services.AddTransient<IMailService, CloudMailService>();
 //register the service
 builder.Services.AddSingleton<CitiesDataStore>();
 
+builder.Services.AddDbContext<CityInfoContext>
+(dbContextOptions => dbContextOptions.UseSqlite(builder.Configuration["ConnectionStrings:CityInfoDBConnectionString"])); //key - value
+
+//register the repository
+builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
+
 
 var app = builder.Build();
 
 //// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
+{ 
     // the order is important
     app.UseSwagger();
     app.UseSwaggerUI();
