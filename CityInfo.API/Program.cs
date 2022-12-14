@@ -49,6 +49,9 @@ builder.Services.AddDbContext<CityInfoContext>
 //register the repository
 builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 
+// profile for organizing the mapping configuration
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 
 var app = builder.Build();
 

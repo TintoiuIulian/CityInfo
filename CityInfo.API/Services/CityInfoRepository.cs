@@ -31,6 +31,11 @@ namespace CityInfo.API.Services
 
         }
 
+        public async Task<bool> CityExistAsync(int cityId)
+        {
+            return await _context.Cities.AnyAsync(c => c.Id == cityId);
+        }
+
         public async Task<PointOfInterest?> GetPointOfInterestForCityAsync(int cityId, int pointOfInterestId)
         {
             return await _context.PointOfInterest.Where(p => p.Id == cityId && p.Id == pointOfInterestId).FirstOrDefaultAsync();
