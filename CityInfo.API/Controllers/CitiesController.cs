@@ -2,6 +2,7 @@
 using CityInfo.API.Models;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Xml.Linq;
 
 namespace CityInfo.API.Controllers
@@ -13,6 +14,7 @@ namespace CityInfo.API.Controllers
 
         private readonly ICityInfoRepository _cityInfoRepository;
         private readonly IMapper _mapper;
+        const int maxPageSize = 20;
 
         public CitiesController(ICityInfoRepository cityInfoRepository, IMapper mapper)
         {
@@ -21,26 +23,19 @@ namespace CityInfo.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CityWithoutPointsOfInterestDto>>> GetCities()
+        public async Task<ActionResult<IEnumerable<CityWithoutPointsOfInterestDto>>> GetCities( string? name, string? searchQuery, int pageNumber = 1, int pageSize = 10)
         {
+
+            if (pageSize > maxPageSize)
+            {
+                pageSize = maxPageSize;
+            }
             // i want to obtain a list of cityEntities so i use await and async(dispare task)
-            var cityEntities = await _cityInfoRepository.GetCitiesAsync();
+            var (cityEntities,paginationMetadata) = await _cityInfoRepository.GetCitiesAsync(name, searchQuery, pageNumber, pageSize);
 
-            //var results = new List<CityWithoutPointsOfInterestDto>();
+            //Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
-            //foreach (var cityEntity in cityEntities)
-            //{
-            //    results.Add(new CityWithoutPointsOfInterestDto
-            //    {
-            //        Id = cityEntity.Id,
-            //        Description = cityEntity.Description,
-            //        Name = cityEntity.Name
-            //    });
-            //}
             return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities));
-
-            // return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities));
-
 
         }
         [HttpGet("{id}")]
