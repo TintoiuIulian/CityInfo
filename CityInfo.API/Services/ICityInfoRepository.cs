@@ -23,6 +23,8 @@ namespace CityInfo.API.Services
         // in memory operation not I/O operation so async isnt necessary here
         void DeletePointOfInterest(PointOfInterest pointOfInterest);
 
+        Task<bool> CityNameMatchesCityId(string? cityName,int cityId);
+
         Task<bool> SaveChangesAsync();
 
 
